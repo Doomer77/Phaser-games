@@ -4,6 +4,7 @@ let config = {
   height: 720,
   rows: 2, // количество рядов карт
   cols: 5, // количество столбов карт
+  cards: [1, 2, 3, 4, 5],
   scene: new GameScene(),
 };
 
