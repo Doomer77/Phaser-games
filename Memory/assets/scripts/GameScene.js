@@ -23,6 +23,8 @@ class GameScene extends Phaser.Scene {
         
         //Получение координат карт
         this.createCard();
+
+        this.openedCard = null;
     }
 
     createBackground () {
@@ -42,8 +44,25 @@ class GameScene extends Phaser.Scene {
     }
 
     onCardClicked (pointer, card) {
+      if (card.opened) {
+        return false;
+      }
+      if (this.openedCard) {
+        //если есть уже открытая карта
+        if (this.openedCard.value === card.value) {
+          //картинки равны - запомнить
+          this.openedCard = null;    
+        }else {
+          //картинки разные - скрыть прошлую
+          this.openedCard.close();
+          this.openedCard = card;
+        }
+      } else {
+        //нет открытой карты
+        this.openedCard = card;
+      }
       card.open();
-    }
+    };
 
     getCardsPositions () {
         let positions = [];
