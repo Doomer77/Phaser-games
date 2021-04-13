@@ -20,24 +20,36 @@ class GameScene extends Phaser.Scene {
     create () {
         // 2. вывести бэкграунд
         this.createBackground();
-        
         //Получение координат карт
         this.createCard();
-
-        this.openedCard = null;
+        this.start();
     }
 
+    start () {
+      this.openedCard = null;
+      //Счетчик открытых карт
+      this.openedCardsCount = 0;
+      this.initCards();
+    }
+
+    initCards () {
+      let positions = this.getCardsPositions();
+      this.cards.forEach(card => {
+        let position = positions.pop();
+        card.close();
+        card.setPosition(position.x, position.y);
+      })
+    }
+ 
     createBackground () {
       this.add.sprite(0, 0, "bg").setOrigin(0, 0);
     }
 
     createCard () {
       this.cards = [];
-      let positions = this.getCardsPositions();
-      Phaser.Utils.Array.Shuffle(positions);
       for (let value of config.cards) {
         for (let i = 0; i < 2; i++) {
-          this.cards.push(new Card(this, value, positions.pop()));
+          this.cards.push(new Card(this, value));
         }
       }
       this.input.on('gameobjectdown', this.onCardClicked, this);
@@ -51,7 +63,8 @@ class GameScene extends Phaser.Scene {
         //если есть уже открытая карта
         if (this.openedCard.value === card.value) {
           //картинки равны - запомнить
-          this.openedCard = null;    
+          this.openedCard = null; 
+          ++this.openedCardsCount;   
         }else {
           //картинки разные - скрыть прошлую
           this.openedCard.close();
@@ -62,6 +75,9 @@ class GameScene extends Phaser.Scene {
         this.openedCard = card;
       }
       card.open();
+      if (this.openedCardsCount === this.cards.length / 2) {
+        this.start();
+      }
     };
 
     getCardsPositions () {
@@ -79,6 +95,6 @@ class GameScene extends Phaser.Scene {
             });
           }
         }
-        return positions;
+        return Phaser.Utils.Array.Shuffle(positions);
     }
 };
